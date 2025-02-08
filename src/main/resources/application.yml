@@ -1,8 +1,11 @@
 logging:
+  file:
+    name: logs/application.log
   level:
     ROOT: INFO
     org.hibernate.SQL: DEBUG
     fr.codecake.airbnbcloneback: DEBUG
+
 
 spring:
   profiles:
@@ -21,7 +24,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update  # Modification ici (avant: validate)
     properties:
       hibernate:
         default_schema: airbnb_clone
@@ -30,7 +33,6 @@ spring:
     change-log: classpath:db/changelog/master.xml
     default-schema: airbnb_clone
     enabled: true
-  #    drop-first: true
   servlet:
     multipart:
       enabled: true
@@ -48,3 +50,8 @@ okta:
 application:
   auth0:
     role-landlord-id: rol_GT3Gs6tAsfgV9dLj
+
+stripe:
+  secret:
+    key: sk_test_51OtdAyGmXNQGydzPTs5rVO4CAffYn2xQ1pnKZc0T6TPf9347q0gIRRegBCELdxUkuWJJoLSErmBbzuURR6O1wZmz004FEUJ3It
+

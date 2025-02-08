@@ -18,6 +18,18 @@ public class Booking extends AbstractAuditingEntity<Long> {
     @Column(name = "id")
     private Long id;
 
+
+    @Column(name = "payment_status", nullable = false)
+    private String paymentStatus = "PENDING"; // Default status
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
     @UuidGenerator
     @Column(name = "public_id", nullable = false)
     private UUID publicId;

@@ -1,4 +1,6 @@
 package fr.codecake.airbnbclone.booking.presentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.codecake.airbnbclone.booking.application.BookingService;
 import fr.codecake.airbnbclone.booking.application.dto.BookedDateDTO;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/booking")
 public class BookingResource {
+    private static final Logger log = LoggerFactory.getLogger(BookingResource.class);
 
     private final BookingService bookingService;
 
@@ -37,7 +40,28 @@ public class BookingResource {
             return ResponseEntity.ok(true);
         }
     }
+    @PostMapping("create-payment-intent")
+    public ResponseEntity<String> createPaymentIntent(@RequestParam UUID bookingPublicId, @RequestParam int amount) {
+        log.info("BookingResource.createPaymentIntent: bookingPublicId={}, amount={}", bookingPublicId, amount);
+        State<String, String> paymentIntentState = bookingService.createPaymentIntent(bookingPublicId, amount);
+        if (paymentIntentState.getStatus().equals(StatusNotification.ERROR)) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, paymentIntentState.getError());
+            return ResponseEntity.of(problemDetail).build();
+        } else {
+            return ResponseEntity.ok(paymentIntentState.getValue());
+        }
+    }
 
+    @PostMapping("update-payment-status")
+    public ResponseEntity<Boolean> updatePaymentStatus(@RequestParam UUID bookingPublicId, @RequestParam String status) {
+        State<Void, String> updateState = bookingService.updatePaymentStatus(bookingPublicId, status);
+        if (updateState.getStatus().equals(StatusNotification.ERROR)) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, updateState.getError());
+            return ResponseEntity.of(problemDetail).build();
+        } else {
+            return ResponseEntity.ok(true);
+        }
+    }
     @GetMapping("check-availability")
     public ResponseEntity<List<BookedDateDTO>> checkAvailability(@RequestParam UUID listingPublicId) {
         return ResponseEntity.ok(bookingService.checkAvailability(listingPublicId));

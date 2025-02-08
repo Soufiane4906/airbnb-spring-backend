@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -29,4 +30,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "NOT (booking.endDate <= :startDate or booking.startDate >= :endDate) " +
             "AND booking.fkListing IN :fkListings")
     List<Booking> findAllMatchWithDate(List<UUID> fkListings, OffsetDateTime startDate, OffsetDateTime endDate);
+
+    Optional<Booking> findByPublicId(UUID bookingPublicId);
 }

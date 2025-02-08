@@ -1,5 +1,6 @@
 package fr.codecake.airbnbclone.booking.application;
 
+import com.stripe.exception.StripeException;
 import fr.codecake.airbnbclone.booking.application.dto.BookedDateDTO;
 import fr.codecake.airbnbclone.booking.application.dto.BookedListingDTO;
 import fr.codecake.airbnbclone.booking.application.dto.NewBookingDTO;
@@ -14,6 +15,7 @@ import fr.codecake.airbnbclone.listing.application.dto.vo.PriceVO;
 import fr.codecake.airbnbclone.sharedkernel.service.State;
 import fr.codecake.airbnbclone.user.application.UserService;
 import fr.codecake.airbnbclone.user.application.dto.ReadUserDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +32,16 @@ public class BookingService {
     private final UserService userService;
     private final LandlordService landlordService;
 
+    private final PaymentService paymentService;
+
+
     public BookingService(BookingRepository bookingRepository, BookingMapper bookingMapper,
-                          UserService userService, LandlordService landlordService) {
+                          UserService userService, LandlordService landlordService , PaymentService paymentService) {
         this.bookingRepository = bookingRepository;
         this.bookingMapper = bookingMapper;
         this.userService = userService;
         this.landlordService = landlordService;
+        this.paymentService = paymentService;
     }
 
     @Transactional
@@ -69,7 +75,28 @@ public class BookingService {
 
         return State.<Void, String>builder().forSuccess();
     }
+    @Transactional
+    public State<String, String> createPaymentIntent(UUID bookingPublicId, int amount) {
+        try {
+            String clientSecret = paymentService.createPaymentIntent(amount, "usd");
+            return State.<String, String>builder().forSuccess(clientSecret);
+        } catch (StripeException e) {
+            return State.<String, String>builder().forError(e.getMessage());
+        }
+    }
 
+    @Transactional
+    public State<Void, String> updatePaymentStatus(UUID bookingPublicId, String status) {
+        Optional<Booking> bookingOpt = bookingRepository.findByPublicId(bookingPublicId);
+        if (bookingOpt.isPresent()) {
+            Booking booking = bookingOpt.get();
+            booking.setPaymentStatus(status);
+            bookingRepository.save(booking);
+            return State.<Void, String>builder().forSuccess();
+        } else {
+            return State.<Void, String>builder().forError("Booking not found");
+        }
+    }
     @Transactional(readOnly = true)
     public List<BookedDateDTO> checkAvailability(UUID publicId) {
         return bookingRepository.findAllByFkListing(publicId)

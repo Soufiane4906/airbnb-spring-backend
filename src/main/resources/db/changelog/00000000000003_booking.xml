@@ -37,6 +37,7 @@
             <column name="created_date" type="timestamp"/>
             <column name="last_modified_date" type="timestamp"/>
         </createTable>
+
         <addForeignKeyConstraint baseColumnNames="fk_listing" baseTableName="booking" constraintName="fk_listing_id"
                                  deferrable="false"
                                  initiallyDeferred="false" referencedColumnNames="public_id"
@@ -47,4 +48,12 @@
                                  initiallyDeferred="false" referencedColumnNames="public_id"
                                  referencedTableName="airbnb_user" validate="true"/>
     </changeSet>
+
+    <!-- Nouvelle migration pour ajouter la colonne manquante -->
+    <changeSet id="00000000000003-add-payment-status" author="codecake">
+        <addColumn tableName="booking">
+            <column name="payment_status" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

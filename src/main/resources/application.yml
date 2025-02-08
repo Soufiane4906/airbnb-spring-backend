@@ -41,10 +41,10 @@ server:
 
 okta:
   oauth2:
-    issuer: https://airbnb-clone.us.auth0.com/
-    client-id: ${AUTH0_CLIENT_ID}
-    client-secret: ${AUTH0_CLIENT_SECRET}
+    issuer: https://dev-vxnf312d71qmcfhy.us.auth0.com/
+    client-id: fhEbTMGKDh8f8iJOPc4r2mkzvvTrfEB6
+    client-secret: BO9Iq0To02thVLtQ63eDvLboqcJreq7etQqomCPrvUlWw8SGJP2f2VxukJ-Pxewc
 
 application:
   auth0:
-    role-landlord-id: rol_v1CpFU8josLg8YjC
+    role-landlord-id: rol_GT3Gs6tAsfgV9dLj

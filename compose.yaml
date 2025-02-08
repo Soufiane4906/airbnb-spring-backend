@@ -4,7 +4,7 @@ services:
     volumes:
       - ~/volumes/codecake/postgresql/:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=codecake
-      - POSTGRES_USER=codecake
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
     ports:
-      - 127.0.0.1:5432:5432
+      - 5432:5432
